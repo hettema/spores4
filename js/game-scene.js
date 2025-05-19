@@ -153,6 +153,11 @@ class GameScene extends Phaser.Scene {
             return;
         }
         
+        // Update the grid (for path drawing)
+        if (this.grid.update) {
+            this.grid.update();
+        }
+        
         try {
             // Get the current word from selected tiles
             if (this.grid.selectedTiles.length > 0) {

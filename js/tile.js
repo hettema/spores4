@@ -766,6 +766,30 @@ class Tile {
     }
     
     /**
+     * Set a new letter for the tile
+     * @param {string} letter - The new letter
+     */
+    setLetter(letter) {
+        // Update letter property
+        this.letter = letter;
+        
+        // Update letter text display
+        if (this.letterText) {
+            this.letterText.setText(letter);
+        }
+        
+        // Update score value
+        if (this.scoreText) {
+            this.scoreText.setText(LetterData.getPointValue(letter).toString());
+        }
+        
+        // Update appearance to refresh the tile
+        this.updateAppearance();
+        
+        console.log(`Tile at [${this.gridY}][${this.gridX}] letter changed to ${letter}`);
+    }
+    
+    /**
      * Destroy the tile and its components
      */
     destroy() {

@@ -33,7 +33,7 @@ class LevelManager {
             {
                 levelNumber: 2,
                 name: "Infinite Mode",
-                gridSize: 8,
+                gridSize: 7, // Changed from 8 to 7 for better diagonal selection
                 objectives: [], // No objectives, play indefinitely
                 nextLevel: null, // No next level
                 tooltips: []
@@ -166,6 +166,12 @@ class LevelManager {
         
         // Get the current level to find the next level
         const currentLevel = this.getLevel(this.currentLevel);
+        
+        // If this is level 1 (tutorial), mark it as completed in localStorage
+        if (this.currentLevel === 1) {
+            localStorage.setItem('sporesCompletedLevel1', 'true');
+            console.log('Tutorial completed, saved to localStorage');
+        }
         
         // Show completion UI with delay to let final animations complete
         this.scene.time.delayedCall(1000, () => {

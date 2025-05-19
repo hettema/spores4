@@ -11,9 +11,9 @@ class GameSettings {
         this.visible = false;
         this.container = null;
         this.settings = {
-            sporeCount: 4,           // Base number of spores released per explosion
-            sporeThreshold: 5,       // Number of spores needed to trigger an explosion
-            sporeDistribution: 2,    // Controls how widely spores are distributed
+            sporeCount: 8,           // Base number of spores released per explosion
+            sporeThreshold: 2,       // Number of spores needed to trigger an explosion
+            sporeDistribution: 1.5,  // Controls how widely spores are distributed
             wordLengthFactor: 1.5    // Multiplier for word length bonus (6+ letters)
         };
         
@@ -214,9 +214,9 @@ class GameSettings {
      */
     resetToDefaults() {
         const defaults = {
-            sporeCount: 4,
-            sporeThreshold: 5,
-            sporeDistribution: 2,
+            sporeCount: 8,
+            sporeThreshold: 2,
+            sporeDistribution: 1.5,
             wordLengthFactor: 1.5
         };
         

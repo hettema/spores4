@@ -124,17 +124,21 @@ class WordValidator {
     isValid(word) {
         // Minimum length requirement
         if (word.length < 3) {
-            console.log(`Word "${word}" is too short`);
             return false;
+        }
+        
+        // Skip logging for better performance during active gameplay
+        if (word.length >= 6) {
+            console.log(`Checking word: "${word}"`);
         }
         
         // If dictionary is not loaded yet, wait a bit more
         if (!this.loaded) {
             if (this.loading) {
-                console.warn('Dictionary still loading, temporarily rejecting all words');
+                if (word.length >= 6) console.warn('Dictionary still loading, temporarily rejecting all words');
                 return false;
             } else {
-                console.warn('Dictionary failed to load, using fallback dictionary');
+                if (word.length >= 6) console.warn('Dictionary failed to load, using fallback dictionary');
                 this.createFallbackDictionary();
             }
         }
@@ -142,8 +146,13 @@ class WordValidator {
         // Check if the word is in the dictionary
         const upperWord = word.toUpperCase();
         const result = this.dictionary.has(upperWord);
-        console.log(`Word "${word}" (${upperWord}) is ${result ? 'valid' : 'invalid'}`);
-        console.log(`Dictionary size: ${this.dictionary.size}, contains 'THE': ${this.dictionary.has('THE')}`);
+        
+        // Only log for longer words to reduce console spam
+        if (word.length >= 6) {
+            console.log(`Word "${word}" (${upperWord}) is ${result ? 'valid' : 'invalid'}`);
+            console.log(`Dictionary size: ${this.dictionary.size}, contains 'THE': ${this.dictionary.has('THE')}`);
+        }
+        
         return result;
     }
     

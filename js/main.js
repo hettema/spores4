@@ -28,26 +28,42 @@ window.onload = function() {
     
     // Check if we need to initialize at a specific level
     game.events.once('ready', () => {
+        // Check if we have a stored level in session storage
         const storedLevel = sessionStorage.getItem('sporesLevel');
+        
+        // Check if the user has completed level 1
+        const hasCompletedTutorial = localStorage.getItem('sporesCompletedLevel1') === 'true';
+        
+        // Determine which level to load
+        let levelToLoad = 1; // Default to level 1 (tutorial)
+        
         if (storedLevel) {
-            const levelNumber = parseInt(storedLevel, 10);
-            
+            // If a specific level is stored, use that
+            levelToLoad = parseInt(storedLevel, 10);
             // Clear the stored level so it doesn't persist indefinitely
             sessionStorage.removeItem('sporesLevel');
-            
+        } else if (hasCompletedTutorial) {
+            // If the user has completed the tutorial, load level 2
+            console.log('User has completed tutorial, loading level 2');
+            levelToLoad = 2;
+        }
+        
+        if (levelToLoad !== 1) {
             // Give the scene a moment to initialize before setting the level
             setTimeout(() => {
                 const gameScene = game.scene.getScene('GameScene');
                 if (gameScene && gameScene.levelManager) {
+                    console.log(`Initializing game at level ${levelToLoad}`);
+                    
                     // Initialize at the correct level
-                    gameScene.levelManager.initLevel(levelNumber);
+                    gameScene.levelManager.initLevel(levelToLoad);
                     
                     // Reset the game for this level
                     gameScene.score = 0;
                     gameScene.scoreText.setText(`Score: 0`);
                     
                     // Reset grid if level 2
-                    if (levelNumber === 2) {
+                    if (levelToLoad === 2) {
                         try {
                             // Recreate grid with 8x8 size
                             const gridSize = Math.min(gameScene.cameras.main.width, gameScene.cameras.main.height) * 0.8;
@@ -59,8 +75,8 @@ window.onload = function() {
                                 gameScene.grid.cleanup();
                             }
                             
-                            // Create a new grid with 8x8 size
-                            gameScene.grid = new Grid(gameScene, gridX, gridY, gridSize, gridSize, 8);
+                            // Create a new grid with 7x7 size
+                            gameScene.grid = new Grid(gameScene, gridX, gridY, gridSize, gridSize, 7);
                             
                             // Rebuild UI for level 2
                             gameScene.levelManager.createUI();
