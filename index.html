@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spores - Word Strategy Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <script>
+        // Set canvas options for better performance
+        window.addEventListener('DOMContentLoaded', () => {
+            // Add willReadFrequently attribute to canvas to address performance warnings
+            const canvasObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.addedNodes) {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeName === 'CANVAS') {
+                                node.setAttribute('willReadFrequently', 'true');
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Observe the game container for canvas creation
+            const config = { childList: true, subtree: true };
+            const targetNode = document.getElementById('game-container');
+            if (targetNode) {
+                canvasObserver.observe(targetNode, config);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="game-container"></div>
+    
+    <script src="js/letter-data.js"></script>
+    <script src="js/tile.js"></script>
+    <script src="js/word-validator.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/game-settings.js"></script>
+    <script src="js/level-manager.js"></script>
+    <script src="js/game-scene.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
