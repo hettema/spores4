@@ -1,0 +1,14 @@
+{
+  "name": "spores4",
+  "version": "1.0.0",
+  "description": "Spores - Word Strategy Game",
+  "main": "index.html",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'No build step required - static site'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
