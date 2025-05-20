@@ -1579,6 +1579,56 @@ class Grid {
             });
         }
     }
+
+    /**
+     * Find valid words currently present in the grid
+     * Scans in all 8 directions for sequences of 3 or more letters
+     * @param {number} maxWords - Maximum number of words to return
+     * @returns {string[]} Array of words
+     */
+    getValidWords(maxWords = 20) {
+        const results = new Set();
+        const dictionary = this.scene.wordValidator && this.scene.wordValidator.dictionary;
+        if (!dictionary || dictionary.size === 0) return [];
+
+        const directions = [
+            { dr: -1, dc: 0 },  // Up
+            { dr: -1, dc: 1 },  // Up-Right
+            { dr: 0, dc: 1 },   // Right
+            { dr: 1, dc: 1 },   // Down-Right
+            { dr: 1, dc: 0 },   // Down
+            { dr: 1, dc: -1 },  // Down-Left
+            { dr: 0, dc: -1 },  // Left
+            { dr: -1, dc: -1 }  // Up-Left
+        ];
+
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                for (const dir of directions) {
+                    let word = '';
+                    for (let i = 0; i < this.gridSize; i++) {
+                        const r = row + dir.dr * i;
+                        const c = col + dir.dc * i;
+                        if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) break;
+                        const tile = this.tiles[r][c];
+                        if (!tile) break;
+                        word += tile.letter;
+                        if (word.length >= 3) {
+                            const upper = word.toUpperCase();
+                            if (dictionary.has(upper)) {
+                                results.add(upper);
+                                if (results.size >= maxWords) {
+                                    return Array.from(results);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return Array.from(results);
+    }
     
     /**
      * Cleanup for grid reset

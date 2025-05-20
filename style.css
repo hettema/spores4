@@ -125,3 +125,42 @@ body {
     border: 1px solid rgba(140, 220, 140, 0.3);
     pointer-events: none;
 }
+
+/* Word hint list styling */
+.word-hints-container {
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    z-index: 500;
+    border: 1px solid rgba(140, 220, 140, 0.3);
+    box-shadow: 0 0 10px rgba(80, 220, 120, 0.5);
+    max-width: 150px;
+}
+
+.word-hints-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.word-hints-container li {
+    margin-bottom: 3px;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.word-hints-container li.fade-out {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.hint-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #8eff8e;
+    text-shadow: 0 0 5px rgba(80, 220, 120, 0.5);
+}

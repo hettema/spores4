@@ -95,10 +95,14 @@ class GameScene extends Phaser.Scene {
         
         // Create game settings panel
         this.gameSettings = new GameSettings(this);
-        
+
         // Create level objectives UI
         this.levelManager.createUI();
-        
+
+        // Create word hint UI
+        this.createHintUI();
+        this.updateHintWords();
+
         // Show tooltips for the tutorial level
         this.levelManager.showTooltips();
     }
@@ -228,12 +232,16 @@ class GameScene extends Phaser.Scene {
                 this.wordText.setText('');
             }
         });
+
+        // Check if this word was one of the hints
+        this.checkHintWord(word);
         
         // Update high score if needed
         const highScore = parseInt(localStorage.getItem('sporesHighScore'));
         if (this.score > highScore) {
             localStorage.setItem('sporesHighScore', this.score.toString());
         }
+
     }
     
     /**
@@ -333,6 +341,11 @@ class GameScene extends Phaser.Scene {
         if (this.score > highScore) {
             localStorage.setItem('sporesHighScore', this.score.toString());
         }
+
+        // Refresh hints after the board changes
+        this.time.delayedCall(400, () => {
+            this.updateHintWords();
+        });
     }
     
     /**
@@ -865,6 +878,9 @@ class GameScene extends Phaser.Scene {
         try {
             console.log("Creating new grid");
             this.grid = new Grid(this, gridX, gridY, gameDimension, gameDimension, gridSize);
+
+            // Refresh hint words for the new grid
+            this.updateHintWords();
             
             // Reset word text
             this.wordText.setText('');
@@ -905,6 +921,76 @@ class GameScene extends Phaser.Scene {
             console.log(`Game reset complete for level ${this.levelManager.currentLevel} with grid size ${gridSize}x${gridSize}`);
         } catch (error) {
             console.error("Critical error during game reset:", error);
+        }
+    }
+
+    /**
+     * Create the hint UI container on the DOM
+     */
+    createHintUI() {
+        this.hintContainer = document.createElement('div');
+        this.hintContainer.className = 'word-hints-container';
+
+        const title = document.createElement('div');
+        title.className = 'hint-title';
+        title.textContent = 'Hints';
+        this.hintContainer.appendChild(title);
+
+        this.hintList = document.createElement('ul');
+        this.hintContainer.appendChild(this.hintList);
+
+        const gameContainer = document.getElementById('game-container');
+        if (gameContainer) {
+            gameContainer.appendChild(this.hintContainer);
+        } else {
+            document.body.appendChild(this.hintContainer);
+        }
+    }
+
+    /**
+     * Update the list of hint words based on the current grid
+     */
+    updateHintWords() {
+        if (!this.grid || !this.grid.getValidWords) return;
+        const words = this.grid.getValidWords(20);
+        this.currentHints = words.slice(0, 4);
+
+        if (this.hintList) {
+            this.hintList.innerHTML = '';
+            this.currentHints.forEach(word => {
+                const li = document.createElement('li');
+                li.textContent = word;
+                this.hintList.appendChild(li);
+            });
+        }
+    }
+
+    /**
+     * Remove a word from the hint list with a fade animation
+     * @param {string} word - Word to remove
+     */
+    removeHintWord(word) {
+        if (!this.hintList) return;
+        const items = Array.from(this.hintList.children);
+        for (const li of items) {
+            if (li.textContent === word.toUpperCase()) {
+                li.classList.add('fade-out');
+                setTimeout(() => {
+                    li.remove();
+                    this.updateHintWords();
+                }, 300);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Check if a selected word matches a hint and remove it
+     * @param {string} word - The word found by the player
+     */
+    checkHintWord(word) {
+        if (this.currentHints && this.currentHints.includes(word.toUpperCase())) {
+            this.removeHintWord(word);
         }
     }
 }
