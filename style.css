@@ -164,3 +164,15 @@ body {
     color: #8eff8e;
     text-shadow: 0 0 5px rgba(80, 220, 120, 0.5);
 }
+
+/* Category headers within the hint box */
+.hint-category-title {
+    font-weight: bold;
+    margin-top: 4px;
+    color: #b0ffb0;
+}
+
+.hint-group:not(:first-child) {
+    margin-top: 6px;
+}
+

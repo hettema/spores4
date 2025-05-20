@@ -936,8 +936,23 @@ class GameScene extends Phaser.Scene {
         title.textContent = 'Hints';
         this.hintContainer.appendChild(title);
 
-        this.hintList = document.createElement('ul');
-        this.hintContainer.appendChild(this.hintList);
+        // Create lists for 3, 4 and 5 letter word hints
+        this.hintLists = {};
+        [3, 4, 5].forEach(len => {
+            const group = document.createElement('div');
+            group.className = 'hint-group';
+
+            const groupTitle = document.createElement('div');
+            groupTitle.className = 'hint-category-title';
+            groupTitle.textContent = `${len}-Letter`;
+            group.appendChild(groupTitle);
+
+            const ul = document.createElement('ul');
+            group.appendChild(ul);
+
+            this.hintContainer.appendChild(group);
+            this.hintLists[len] = ul;
+        });
 
         const gameContainer = document.getElementById('game-container');
         if (gameContainer) {
@@ -952,15 +967,31 @@ class GameScene extends Phaser.Scene {
      */
     updateHintWords() {
         if (!this.grid || !this.grid.getValidWords) return;
-        const words = this.grid.getValidWords(20);
-        this.currentHints = words.slice(0, 4);
 
-        if (this.hintList) {
-            this.hintList.innerHTML = '';
-            this.currentHints.forEach(word => {
-                const li = document.createElement('li');
-                li.textContent = word;
-                this.hintList.appendChild(li);
+        // Gather a larger pool of candidate words
+        const words = this.grid.getValidWords(100);
+
+        // Organize words by length
+        const byLength = {3: [], 4: [], 5: []};
+        for (const w of words) {
+            const len = w.length;
+            if (len >= 3 && len <= 5 && byLength[len].length < 4) {
+                byLength[len].push(w);
+            }
+        }
+
+        this.currentHints = [...byLength[3], ...byLength[4], ...byLength[5]];
+
+        if (this.hintLists) {
+            [3, 4, 5].forEach(len => {
+                const ul = this.hintLists[len];
+                if (!ul) return;
+                ul.innerHTML = '';
+                byLength[len].forEach(word => {
+                    const li = document.createElement('li');
+                    li.textContent = word;
+                    ul.appendChild(li);
+                });
             });
         }
     }
@@ -970,8 +1001,11 @@ class GameScene extends Phaser.Scene {
      * @param {string} word - Word to remove
      */
     removeHintWord(word) {
-        if (!this.hintList) return;
-        const items = Array.from(this.hintList.children);
+        if (!this.hintLists) return;
+        const len = word.length;
+        const list = this.hintLists[len];
+        if (!list) return;
+        const items = Array.from(list.children);
         for (const li of items) {
             if (li.textContent === word.toUpperCase()) {
                 li.classList.add('fade-out');
@@ -989,7 +1023,8 @@ class GameScene extends Phaser.Scene {
      * @param {string} word - The word found by the player
      */
     checkHintWord(word) {
-        if (this.currentHints && this.currentHints.includes(word.toUpperCase())) {
+        const upper = word.toUpperCase();
+        if (this.currentHints && this.currentHints.includes(upper)) {
             this.removeHintWord(word);
         }
     }
